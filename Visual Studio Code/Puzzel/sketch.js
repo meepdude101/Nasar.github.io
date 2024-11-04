@@ -1,9 +1,9 @@
-// Project Title
-// Your Name
-// Date
+// Puzzel Game
+// Nasar Khan
+// 11/4/2024
 //
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+
+// Puzzel game where you have to either get the entire board black or entire board white
 
 let NUM_ROWS = 4;
 let NUM_COLS = 5;
@@ -14,7 +14,7 @@ let gridData = [[0,0,0,0,0],
                 [0,255,0,0,0],
                 [255,255,255,0,0]];
 
-
+let flipPattern = "cross"; // Initial flip pattern is set to "cross"
 
 function setup() {
   // Determine the size of each square. Could use windowHeight,windowHeight  for Canvas to keep a square aspect ratio
@@ -38,15 +38,32 @@ function mousePressed(){
   // cross-shaped pattern flips on a mouseclick. Boundary conditions are checked within the flip function to ensure in-bounds access for array
   if (keyIsDown(SHIFT)) {
     flip(currentCol, currentRow);
-  } else {
+  } 
+  else if (flipPattern === "cross") {
     flip(currentCol, currentRow);
     flip(currentCol - 1, currentRow);
     flip(currentCol + 1, currentRow);
     flip(currentCol, currentRow - 1);
     flip(currentCol, currentRow + 1);
+  } 
+  else if (flipPattern === "square") {
+    // Square pattern flips
+    flip(currentCol, currentRow);
+    flip(currentCol + 1, currentRow);
+    flip(currentCol, currentRow + 1);
+    flip(currentCol + 1, currentRow + 1);
+
   }
 }
 
+
+
+function keyPressed() {
+  // Switch to square pattern when spacebar is pressed
+  if (key === ' ') {
+    flipPattern = (flipPattern === "cross") ? "square" : "cross";
+  }
+}
 
 
 function flip(col, row){
@@ -81,11 +98,18 @@ fill(100, 255, 100, 100);  // Semi-transparent blue for overlay
   
   
   // Highlight current cell and adjacent cells in a cross pattern
-  highlightCell(currentCol, currentRow);           // Center
-  highlightCell(currentCol - 1, currentRow);       // Left
-  highlightCell(currentCol + 1, currentRow);       // Right
-  highlightCell(currentCol, currentRow - 1);       // Top
-  highlightCell(currentCol, currentRow + 1);       // Bottom
+  if (flipPattern === "cross") {
+    highlightCell(currentCol, currentRow);
+    highlightCell(currentCol - 1, currentRow);
+    highlightCell(currentCol + 1, currentRow);
+    highlightCell(currentCol, currentRow - 1);
+    highlightCell(currentCol, currentRow + 1);
+  } else if (flipPattern === "square") {
+    highlightCell(currentCol, currentRow);
+    highlightCell(currentCol + 1, currentRow);
+    highlightCell(currentCol, currentRow + 1);
+    highlightCell(currentCol + 1, currentRow + 1);
+  }
 }
 
 function highlightCell(col, row) {
@@ -133,4 +157,9 @@ function randomizeBoard() {
       gridData[row][col] = random([0, 255]);  // Randomly set each element to either 0 or 255
     }
   }
+}
+
+function square() {
+  if (keyIsDown( )) {
+}
 }
