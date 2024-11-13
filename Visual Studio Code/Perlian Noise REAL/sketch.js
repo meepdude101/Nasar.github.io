@@ -1,34 +1,25 @@
-// Project Title
-// Your Name
-// Date
-//
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
-
-
-let rectWidth = 0.5;
+let segmentWidth = 10; // Width of each segment for terrain
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  frameRate(60);
 }
 
 function draw() {
   background(220);
-  staircase();
+  generateTerrain();
 }
 
+function generateTerrain() {
+  let numSegments = width / segmentWidth; // Total segments across the canvas
+  let maxSegmentHeight = 200; // Limit the maximum segment height
 
-function staircase(){
+  for (let i = 0; i < numSegments; i++) {
+    let xPos = i * segmentWidth; // Position each segment side-by-side
+    let segmentHeight = random(maxSegmentHeight); // Random height for basic terrain
 
-  for(let x = 0; x <= width; x += rectWidth){
-    noFill();
-
-    let rectHeight = noise(x * 0.002);
-    
-
-    rectHeight = map(rectHeight, 0, 1, 500, 100);
-
-    rect(x, height, rectWidth, -rectHeight);
-
+    fill(150);
+    stroke(0);
+    rect(xPos, height, segmentWidth, -segmentHeight); // Draw each segment
   }
 }
