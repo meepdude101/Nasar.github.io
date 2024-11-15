@@ -6,7 +6,8 @@
 // Explain game
 
 let segmentWidth = 10; // Width of each segment for terrain
-let noiseOffset = 0; // Offset for Perlin noise
+let frameCount = 0; // Frame counter for terrain panning
+let scrollRate = -0.01; // Panning speed
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -15,24 +16,26 @@ function setup() {
 
 function draw() {
   background(220);
-  renderSmoothTerrain();
+  renderTerrainWithPanning();
 }
 
-function renderSmoothTerrain() {
-  if (keyIsDown(LEFT_ARROW)) segmentWidth -= 1; // Adjust segment width with arrow keys
+function renderTerrainWithPanning() {
+  if (keyIsDown(LEFT_ARROW)) segmentWidth -= 1;
   if (keyIsDown(RIGHT_ARROW)) segmentWidth += 1;
-  segmentWidth = constrain(segmentWidth, 1, width / 10); // Constrain width adjustment
+  segmentWidth = constrain(segmentWidth, 1, width / 10);
 
   let numSegments = width / segmentWidth;
   let maxSegmentHeight = 300;
-  noiseOffset += 0.02; // Move the noise offset for smooth terrain changes
+  let noiseOffset = frameCount * scrollRate;
 
   for (let i = 0; i < numSegments; i++) {
     let xPos = i * segmentWidth;
-    let segmentHeight = noise(i * 0.1 + noiseOffset) * maxSegmentHeight; // Use Perlin noise for smooth height
+    let segmentHeight = noise(i * 0.1 + noiseOffset) * maxSegmentHeight;
 
-    fill(150);
+    fill(135, 206, 235);
     stroke(0);
-    rect(xPos, height, segmentWidth, -segmentHeight); // Draw each smooth segment
+    rect(xPos, height, segmentWidth, -segmentHeight);
   }
+
+  frameCount++; // Update frame count for continuous panning
 }
