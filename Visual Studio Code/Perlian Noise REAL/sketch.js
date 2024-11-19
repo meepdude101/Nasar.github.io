@@ -1,3 +1,11 @@
+// Perlin Noise
+// Nasar Khan
+// 11/20/2024
+//
+
+// Generate random terrian and find highest point
+
+
 let segmentWidth = 1; // Width of each segment for terrain
 let frameCount = 0; // Counts frames for panning effect
 let scrollRate = -0.01; // Controls the direction and speed of terrain panning
