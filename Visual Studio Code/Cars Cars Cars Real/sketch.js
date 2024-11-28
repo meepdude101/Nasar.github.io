@@ -5,6 +5,7 @@
 
 let eastboundVehicles = []; // Vehicles moving right
 let westboundVehicles = []; // Vehicles moving left
+let signalController; // Traffic light controller
 
 function setup() {
   createCanvas(windowWidth, windowHeight); // Full-screen canvas
@@ -17,17 +18,28 @@ function setup() {
     // Eastbound vehicles (right-moving)
     eastboundVehicles.push(new Vehicle(random(width), height / 2 + 50, 1, 2));
   }
+
+  // Initialize traffic light system
+  signalController = new SignalSystem();
 }
 
 function draw() {
   background(180); // Gray background
   drawRoad(); // Draw the road
 
-  // Draw all vehicles
+  // Update and display the traffic light
+  signalController.update();
+  signalController.display();
+
+  // Move and display westbound vehicles
   for (let vehicle of westboundVehicles) {
+    vehicle.move();
     vehicle.display();
   }
+
+  // Move and display eastbound vehicles
   for (let vehicle of eastboundVehicles) {
+    vehicle.move();
     vehicle.display();
   }
 }
@@ -62,6 +74,17 @@ class Vehicle {
     this.xSpeed = spd; // Speed
   }
 
+  // Move the vehicle only if the light is green
+  move() {
+    if (signalController.currentState === "green") {
+      this.x += this.xSpeed;
+
+      // Wrap around the screen
+      if (this.direction === 1 && this.x > width) this.x = 0; // Rightward wrap
+      if (this.direction === 0 && this.x < 0) this.x = width; // Leftward wrap
+    }
+  }
+
   // Display the vehicle
   display() {
     stroke(255); // White outline
@@ -83,6 +106,52 @@ class Vehicle {
       fill(20);
       ellipse(this.x + 10, this.y + 25, 14, 14); // Rear wheel
       ellipse(this.x + 35, this.y + 25, 14, 14); // Front wheel
+    }
+  }
+}
+
+// Traffic light system
+class SignalSystem {
+  constructor() {
+    this.currentState = "green"; // Start with green light
+    this.timer = 0;
+    this.redDuration = 120; // Red light lasts for 120 frames
+  }
+
+  // Update the traffic light state
+  update() {
+    if (this.timer > 0) {
+      this.timer--;
+
+      // Switch back to green when the timer ends
+      if (this.timer === 0) {
+        this.currentState = "green";
+      }
+    }
+  }
+
+  // Display the traffic light
+  display() {
+    rectMode(CENTER);
+
+    fill(50); // Light box
+    rect(width / 2, height / 2 - 400, 80, 150); // Traffic light box
+
+    if (this.currentState === "green") {
+      fill(0, 255, 0); // Green light
+    } else {
+      fill(255, 0, 0); // Red light
+    }
+    rect(width / 2, height / 2 - 375, 50, 50); // Light
+
+    rectMode(CORNER);
+  }
+
+  // Switch the light to red
+  toggleState() {
+    if (this.currentState === "green") {
+      this.currentState = "red";
+      this.timer = this.redDuration;
     }
   }
 }
