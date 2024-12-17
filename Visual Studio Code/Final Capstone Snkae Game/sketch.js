@@ -5,7 +5,6 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-
 let snake;
 let apple;
 let gridSize = 30;
@@ -38,21 +37,23 @@ function setup() {
 }
 
 function draw() {
-// Clear background
-background(220);
+  // Clear background
+  background(220);
   
-// Draw grid lines (optional, for visual clarity)
-drawGrid();
-
-// Move snake
-moveSnake();
-
-// Draw snake
-drawSnake();
-
-// Draw apple
-drawApple();
-
+  // Draw grid lines (optional, for visual clarity)
+  drawGrid();
+  
+  // Move snake
+  moveSnake();
+  
+  // Draw snake
+  drawSnake();
+  
+  // Draw apple
+  drawApple();
+  
+  // Check for apple eating
+  checkAppleCollision();
 }
 
 function moveSnake() {
@@ -68,7 +69,6 @@ function moveSnake() {
   // Remove last segment (unless snake has eaten an apple)
   snake.body.pop();
 }
-
 
 function drawSnake() {
   fill(0, 255, 0);  // Green snake
@@ -92,18 +92,50 @@ function drawApple() {
   );
 }
 
+function placeApple() {
+  apple = {
+    x: floor(random(gridWidth)),
+    y: floor(random(gridHeight))
+  };
+}
 
-function drawGrid(){
-  stroke(200)
-  //vert lines
-  for (let x = 0; x < width; x+= gridSize) {
-    line(x, 0, x, height);
-  }
-  //horiz lines
-  for (let y = 0; y< height; y += gridSize) {
-    line(0,y, width, y);
+function checkAppleCollision() {
+  // Check if snake head is on the apple
+  if (snake.body[0].x === apple.x && 
+      snake.body[0].y === apple.y) {
+    // Grow snake
+    snake.body.push({...snake.body[snake.body.length-1]});
+    
+    // Place new apple
+    placeApple();
   }
 }
 
+function drawGrid() {
+  stroke(200);
+  // Vertical lines
+  for (let x = 0; x < width; x += gridSize) {
+    line(x, 0, x, height);
+  }
+  // Horizontal lines
+  for (let y = 0; y < height; y += gridSize) {
+    line(0, y, width, y);
+  }
+}
 
-
+function keyPressed() {
+  // Change snake direction based on arrow keys
+  if (keyCode === UP_ARROW && snake.dy === 0) {
+    snake.dx = 0;
+    snake.dy = -1;
+  } else if (keyCode === DOWN_ARROW && snake.dy === 0) {
+    snake.dx = 0;
+    snake.dy = 1;
+  } else if (keyCode === LEFT_ARROW && snake.dx === 0) {
+    snake.dx = -1;
+    snake.dy = 0;
+  } else if (keyCode === RIGHT_ARROW && snake.dx === 0) {
+    snake.dx = 1;
+    snake.dy = 0;
+  }
+}
