@@ -5,137 +5,94 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
-let snake;
-let apple;
-let gridSize = 30;
-let gridWidth;
-let gridHeight;
+
+
+let snakeX = [];  // Array to store snake X positions
+let snakeY = [];  // Array to store snake Y positions
+let snakeLength = 3;  // Current length of snake
+let appleX;       // Apple X position
+let appleY;       // Apple Y position
+let direction = "right";  // Starting direction
+let score = 0;    // Player's score
+let gameSize = 20;  // Size of each grid square
 
 function setup() {
-  // Create canvas that fits the window while maintaining grid alignment
-  createCanvas(windowWidth - (windowWidth % gridSize), 
-               windowHeight - (windowHeight % gridSize));
+  createCanvas(400, 400);
+  frameRate(10);  // speed for gameplay
   
-  // Calculate grid dimensions
-  gridWidth = width / gridSize;
-  gridHeight = height / gridSize;
+  // Start with a 3-segment snake in the middle
+  snakeX = [10, 10, 10];
+  snakeY = [10, 9, 8];
   
-  // Initialize snake in the center of the grid
-  snake = {
-    body: [
-      {x: floor(gridWidth / 2), y: floor(gridHeight / 2)}
-    ],
-    dx: 1,  // Initial direction - moving right
-    dy: 0
-  };
-  
-  // Place apple in a random location
-  placeApple();
-  
-  // Set frame rate to control game speed
-  frameRate(10);
+  // Place first apple
+  moveApple();
 }
 
 function draw() {
-  // Clear background
   background(220);
   
-  // Draw grid lines (optional, for visual clarity)
-  drawGrid();
-  
-  // Move snake
+  // Move snake in current direction
   moveSnake();
   
-  // Draw snake
-  drawSnake();
+  // Draw snake (green squares)
+  fill(0, 255, 0);
+  for (let i = 0; i < snakeLength; i++) {
+    square(snakeX[i] * gameSize, snakeY[i] * gameSize, gameSize);
+  }
   
-  // Draw apple
-  drawApple();
+  // Draw apple (red square)
+  fill(255, 0, 0);
+  square(appleX * gameSize, appleY * gameSize, gameSize);
   
-  // Check for apple eating
-  checkAppleCollision();
+  // Show score
+  fill(0);
+  textSize(20);
+  text("Score: " + score, 10, 30);
+  
+  // Check if snake ate apple
+  if (snakeX[0] === appleX && snakeY[0] === appleY) {
+    score += 1;
+    // Grow snake by increasing length
+    snakeLength += 1;
+    // Make arrays bigger for new length
+    snakeX[snakeLength - 1] = snakeX[snakeLength - 2];
+    snakeY[snakeLength - 1] = snakeY[snakeLength - 2];
+    // Move apple
+    moveApple();
+  }
 }
 
 function moveSnake() {
-  // Create a new head position based on current direction
-  let newHead = {
-    x: snake.body[0].x + snake.dx,
-    y: snake.body[0].y + snake.dy
-  };
+  // Move body segments
+  for (let i = snakeLength - 1; i > 0; i--) {
+    snakeX[i] = snakeX[i - 1];
+    snakeY[i] = snakeY[i - 1];
+  }
   
-  // Move snake by adding new head to the front
-  snake.body.unshift(newHead);
-  
-  // Remove last segment (unless snake has eaten an apple)
-  snake.body.pop();
+  // Move head based on direction
+  if (direction === "right") snakeX[0] += 1;
+  if (direction === "left") snakeX[0] -= 1;
+  if (direction === "up") snakeY[0] -= 1;
+  if (direction === "down") snakeY[0] += 1;
 }
 
-function drawSnake() {
-  fill(0, 255, 0);  // Green snake
-  for (let segment of snake.body) {
-    rect(
-      segment.x * gridSize, 
-      segment.y * gridSize, 
-      gridSize, 
-      gridSize
-    );
-  }
-}
-
-function drawApple() {
-  fill(255, 0, 0);  // Red apple
-  rect(
-    apple.x * gridSize, 
-    apple.y * gridSize, 
-    gridSize, 
-    gridSize
-  );
-}
-
-function placeApple() {
-  apple = {
-    x: floor(random(gridWidth)),
-    y: floor(random(gridHeight))
-  };
-}
-
-function checkAppleCollision() {
-  // Check if snake head is on the apple
-  if (snake.body[0].x === apple.x && 
-      snake.body[0].y === apple.y) {
-    // Grow snake
-    snake.body.push({...snake.body[snake.body.length-1]});
-    
-    // Place new apple
-    placeApple();
-  }
-}
-
-function drawGrid() {
-  stroke(200);
-  // Vertical lines
-  for (let x = 0; x < width; x += gridSize) {
-    line(x, 0, x, height);
-  }
-  // Horizontal lines
-  for (let y = 0; y < height; y += gridSize) {
-    line(0, y, width, y);
-  }
+function moveApple() {
+  appleX = floor(random(width / gameSize));
+  appleY = floor(random(height / gameSize));
 }
 
 function keyPressed() {
-  // Change snake direction based on arrow keys
-  if (keyCode === UP_ARROW && snake.dy === 0) {
-    snake.dx = 0;
-    snake.dy = -1;
-  } else if (keyCode === DOWN_ARROW && snake.dy === 0) {
-    snake.dx = 0;
-    snake.dy = 1;
-  } else if (keyCode === LEFT_ARROW && snake.dx === 0) {
-    snake.dx = -1;
-    snake.dy = 0;
-  } else if (keyCode === RIGHT_ARROW && snake.dx === 0) {
-    snake.dx = 1;
-    snake.dy = 0;
+  // Change direction with arrow keys
+  if (keyCode === UP_ARROW && direction !== "down") {
+    direction = "up";
+  }
+  if (keyCode === DOWN_ARROW && direction !== "up") {
+    direction = "down";
+  }
+  if (keyCode === LEFT_ARROW && direction !== "right") {
+    direction = "left";
+  }
+  if (keyCode === RIGHT_ARROW && direction !== "left") {
+    direction = "right";
   }
 }
